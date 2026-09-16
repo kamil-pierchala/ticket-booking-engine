@@ -1,0 +1,15 @@
+services:
+  ticket-db:
+    image: postgres:16-alpine
+    container_name: ticket_engine_db
+    environment:
+      POSTGRES_DB: ticket_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_ticket:/var/lib/postgresql/data
+
+volumes:
+  pgdata_ticket:
