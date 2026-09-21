@@ -30,7 +30,7 @@ public class DataSeeder implements CommandLineRunner {
             return;
         }
 
-        log.info("Seeding initial event and seats data...");
+        log.info("Seeding initial event and seats data");
 
         Event concert = Event.builder()
                 .name("Rock Festival 2026")
