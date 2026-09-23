@@ -7,7 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.kamilpierchala.ticketbookingengine.dto.BookingRequest;
 import pl.kamilpierchala.ticketbookingengine.dto.BookingResponse;
+import pl.kamilpierchala.ticketbookingengine.dto.SeatResponse;
 import pl.kamilpierchala.ticketbookingengine.service.BookingService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/bookings")
@@ -28,5 +31,12 @@ public class BookingController {
     public ResponseEntity<Void> confirmPayment(@PathVariable Long reservationId) {
         bookingService.confirmPayment(reservationId);
         return ResponseEntity.ok().build();
+    }
+
+    // GET /api/v1/bookings/events/{eventId}/seats
+    @GetMapping("/events/{eventId}/seats")
+    public ResponseEntity<List<SeatResponse>> getAvailableSeats(@PathVariable Long eventId) {
+        List<SeatResponse> seats = bookingService.getAvailableSeatsForEvent(eventId);
+        return ResponseEntity.ok(seats);
     }
 }
