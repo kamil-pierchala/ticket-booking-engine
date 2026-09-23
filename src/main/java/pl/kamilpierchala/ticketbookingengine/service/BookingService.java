@@ -9,12 +9,14 @@ import pl.kamilpierchala.ticketbookingengine.domain.Seat;
 import pl.kamilpierchala.ticketbookingengine.domain.SeatStatus;
 import pl.kamilpierchala.ticketbookingengine.dto.BookingRequest;
 import pl.kamilpierchala.ticketbookingengine.dto.BookingResponse;
+import pl.kamilpierchala.ticketbookingengine.dto.SeatResponse;
 import pl.kamilpierchala.ticketbookingengine.exception.ResourceNotFoundException;
 import pl.kamilpierchala.ticketbookingengine.exception.SeatAlreadyBookedException;
 import pl.kamilpierchala.ticketbookingengine.repository.ReservationRepository;
 import pl.kamilpierchala.ticketbookingengine.repository.SeatRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -80,5 +82,18 @@ public class BookingService {
         reservation.setPaid(true);
         reservation.getSeat().setStatus(SeatStatus.BOOKED);
         log.info("Payment confirmed for reservation ID: {}, seat is now BOOKED", reservationId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<SeatResponse> getAvailableSeatsForEvent(Long eventId) {
+        return seatRepository.findByEventIdAndStatus(eventId, SeatStatus.AVAILABLE)
+                .stream()
+                .map(seat -> new SeatResponse(
+                        seat.getId(),
+                        seat.getSeatNumber(),
+                        seat.getPrice(),
+                        seat.getStatus()
+                ))
+                .toList();
     }
 }
