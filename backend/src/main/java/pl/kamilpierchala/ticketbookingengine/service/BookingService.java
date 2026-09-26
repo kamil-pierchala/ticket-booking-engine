@@ -96,4 +96,17 @@ public class BookingService {
                 ))
                 .toList();
     }
+
+    @Transactional(readOnly = true)
+    public List<SeatResponse> getAllSeatsForEvent(Long eventId) {
+        return seatRepository.findByEventIdOrderBySeatNumberAsc(eventId)
+                .stream()
+                .map(seat -> new SeatResponse(
+                        seat.getId(),
+                        seat.getSeatNumber(),
+                        seat.getPrice(),
+                        seat.getStatus()
+                ))
+                .toList();
+    }
 }
