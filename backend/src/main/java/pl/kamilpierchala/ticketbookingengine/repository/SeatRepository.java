@@ -15,8 +15,9 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
 
     List<Seat> findByEventIdAndStatus(Long eventId, SeatStatus status);
 
-    // Prevents a situation where two threads read the same free space within a fraction of a second
+    // prevents a situation where two threads read the same free space within a fraction of a second
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT s FROM Seat s WHERE s.id = :id")
     Optional<Seat> findByIdWithPessimisticLock(@Param("id") Long id);
+    List<Seat> findByEventIdOrderBySeatNumberAsc(Long eventId);
 }

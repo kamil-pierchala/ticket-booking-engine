@@ -35,8 +35,8 @@ public class BookingController {
 
     // GET /api/v1/bookings/events/{eventId}/seats
     @GetMapping("/events/{eventId}/seats")
-    public ResponseEntity<List<SeatResponse>> getAvailableSeats(@PathVariable Long eventId) {
-        List<SeatResponse> seats = bookingService.getAvailableSeatsForEvent(eventId);
+    public ResponseEntity<List<SeatResponse>> getAllSeats(@PathVariable Long eventId) {
+        List<SeatResponse> seats = bookingService.getAllSeatsForEvent(eventId);
         return ResponseEntity.ok(seats);
     }
 }
