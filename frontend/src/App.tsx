@@ -36,10 +36,27 @@ function App() {
   };
 
   useEffect(() => {
-    fetchSeats();
-    const interval = setInterval(fetchSeats, 3000);
-    return () => clearInterval(interval);
-  }, []);
+      // initial fetch of all seats
+      fetchSeats();
+
+      // open SSE connection to backend
+      const eventSource = new EventSource(`${API_BASE}/stream`);
+
+      eventSource.addEventListener('SEAT_UPDATED', (event) => {
+        const updatedSeat: Seat = JSON.parse(event.data);
+        setSeats((prevSeats) =>
+          prevSeats.map((s) => (s.id === updatedSeat.id ? { ...s, status: updatedSeat.status } : s))
+        );
+      });
+
+      eventSource.onerror = () => {
+        console.warn('SSE connection lost, browser will automatically reconnect...');
+      };
+
+      return () => {
+        eventSource.close();
+      };
+    }, []);
 
   const handleReserve = async (seatId: number) => {
     if (!email.trim()) {
