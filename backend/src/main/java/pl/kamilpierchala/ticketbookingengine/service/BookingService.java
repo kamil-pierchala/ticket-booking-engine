@@ -25,6 +25,7 @@ public class BookingService {
 
     private final SeatRepository seatRepository;
     private final ReservationRepository reservationRepository;
+    private final SseNotificationService sseNotificationService;
 
     private static final int RESERVATION_HOLD_MINUTES = 10;
 
@@ -59,6 +60,11 @@ public class BookingService {
         Reservation savedReservation = reservationRepository.save(reservation);
         log.info("Seat ID: {} successfully locked until: {}", seat.getId(), expiresAt);
 
+        // emit live SSE update
+        sseNotificationService.broadcastSeatUpdate(
+                new SeatResponse(seat.getId(), seat.getSeatNumber(), seat.getPrice(), seat.getStatus())
+        );
+
         return new BookingResponse(
                 savedReservation.getId(),
                 seat.getId(),
@@ -80,8 +86,16 @@ public class BookingService {
         }
 
         reservation.setPaid(true);
-        reservation.getSeat().setStatus(SeatStatus.BOOKED);
+        Seat seat = reservation.getSeat();
+        seat.setStatus(SeatStatus.BOOKED);
+        seatRepository.save(seat);
+
         log.info("Payment confirmed for reservation ID: {}, seat is now BOOKED", reservationId);
+
+        // emit live SSE update
+        sseNotificationService.broadcastSeatUpdate(
+                new SeatResponse(seat.getId(), seat.getSeatNumber(), seat.getPrice(), seat.getStatus())
+        );
     }
 
     @Transactional(readOnly = true)

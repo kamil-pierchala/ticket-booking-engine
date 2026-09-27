@@ -9,6 +9,8 @@ import pl.kamilpierchala.ticketbookingengine.dto.BookingRequest;
 import pl.kamilpierchala.ticketbookingengine.dto.BookingResponse;
 import pl.kamilpierchala.ticketbookingengine.dto.SeatResponse;
 import pl.kamilpierchala.ticketbookingengine.service.BookingService;
+import pl.kamilpierchala.ticketbookingengine.service.SseNotificationService;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
@@ -18,6 +20,7 @@ import java.util.List;
 public class BookingController {
 
     private final BookingService bookingService;
+    private final SseNotificationService sseNotificationService;
 
     // POST /api/v1/booking/reserve
     @PostMapping("/reserve")
@@ -38,5 +41,11 @@ public class BookingController {
     public ResponseEntity<List<SeatResponse>> getAllSeats(@PathVariable Long eventId) {
         List<SeatResponse> seats = bookingService.getAllSeatsForEvent(eventId);
         return ResponseEntity.ok(seats);
+    }
+
+    // GET /api/v1/bookings/stream
+    @GetMapping(value = "/stream", produces = org.springframework.http.MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter streamSeatUpdates() {
+        return sseNotificationService.subscribe();
     }
 }
