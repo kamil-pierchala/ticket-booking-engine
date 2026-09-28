@@ -14,7 +14,7 @@ interface BookingResponse {
   expiresAt: string;
 }
 
-const API_BASE = 'http://localhost:8080/api/v1/bookings';
+const API_BASE = '/api/v1/bookings';
 const EVENT_ID = 1;
 
 function App() {
